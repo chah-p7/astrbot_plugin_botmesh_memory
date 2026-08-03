@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate" />
+    <title>BotMesh 记忆管理</title>
+    <link rel="stylesheet" href="./style.css?v=0.4.8" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">BOTMESH · MEMORY</p>
+          <h1>群聊记忆</h1>
+          <p class="subtitle">按群名称整理共享事实、角色记忆、情景摘要与每日生活日程，内部 ID 不参与日常辨认。</p>
+        </div>
+        <button id="reload" class="button button-quiet" type="button">刷新</button>
+      </header>
+
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+
+      <section class="scope-card">
+        <div class="section-head">
+          <div>
+            <p class="section-kicker">当前范围</p>
+            <h2>选择群聊</h2>
+            <p>选择具体群只处理该群；选择“全部群聊”时，AI 总结会逐群分别执行。</p>
+          </div>
+          <label class="scope-select">
+            <span>群名称</span>
+            <select id="scope"></select>
+          </label>
+        </div>
+
+        <div class="summary-card">
+          <div>
+            <strong>AI 总结当前聊天记录</strong>
+            <p>读取 HistoryWatch 已保存的群聊，生成一条情景摘要，并提取明确事实与纠错。不会生成任何 Bot 的私有看法。</p>
+          </div>
+          <label>
+            <span>总结模型</span>
+            <select id="summaryProvider"></select>
+          </label>
+          <label>
+            <span>记录范围</span>
+            <select id="summaryHours">
+              <option value="6">最近 6 小时</option>
+              <option value="24" selected>最近 24 小时</option>
+              <option value="72">最近 3 天</option>
+              <option value="168">最近 7 天</option>
+            </select>
+          </label>
+          <button id="summarize" class="button button-primary" type="button">立即总结</button>
+        </div>
+
+        <div class="add-row">
+          <input id="newFact" maxlength="2000" placeholder="手动固定一条客观事实" />
+          <button id="addFact" class="button button-secondary" type="button">固定事实</button>
+        </div>
+
+        <div class="import-card">
+          <div class="import-copy">
+            <strong>迁移 / 补写过去记忆</strong>
+            <p>每行一条，可导入为指定 Bot 的私有过去记忆、共享事实或情景摘要。当前为“全部群聊”时会逐群写入。</p>
+          </div>
+          <label>
+            <span>记忆类型</span>
+            <select id="importKind">
+              <option value="private" selected>Bot 私有过去记忆</option>
+              <option value="fact">共享事实</option>
+              <option value="episode">情景摘要</option>
+            </select>
+          </label>
+          <label>
+            <span>记忆所属 Bot</span>
+            <select id="importBot"></select>
+          </label>
+          <textarea id="importText" maxlength="50000" placeholder="每行粘贴一条过去记忆"></textarea>
+          <div class="import-actions">
+            <button id="importMemory" class="button button-primary" type="button">导入记忆</button>
+            <button id="migrateLegacy" class="button button-secondary" type="button">整理现有旧记忆</button>
+          </div>
+        </div>
+      </section>
+
+      <nav class="tabs" aria-label="记忆类型">
+        <button class="tab active" data-tab="facts" type="button">共享事实</button>
+        <button class="tab" data-tab="private" type="button">角色记忆</button>
+        <button class="tab" data-tab="episodes" type="button">情景摘要</button>
+        <button class="tab" data-tab="schedules" type="button">日程</button>
+        <button class="tab" data-tab="corrections" type="button">纠错</button>
+      </nav>
+
+      <section class="panel" id="factsPanel"><div id="facts" class="list"></div></section>
+      <section class="panel" id="privatePanel" hidden><div id="private" class="list"></div></section>
+      <section class="panel" id="episodesPanel" hidden><div id="episodes" class="list"></div></section>
+      <section class="panel" id="schedulesPanel" hidden><div id="schedules" class="list"></div></section>
+      <section class="panel" id="correctionsPanel" hidden><div id="corrections" class="list"></div></section>
+    </main>
+    <script src="/api/plugin/page/bridge-sdk.js"></script>
+    <script src="./app.js?v=0.4.8"></script>
+  </body>
+</html>
