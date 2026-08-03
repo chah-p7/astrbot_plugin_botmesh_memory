@@ -1,0 +1,8 @@
+{
+  "pages": {
+    "memory-manager": {
+      "title": "BotMesh Memory",
+      "description": "Manage identities, shared facts, private memories, episodes, and corrections"
+    }
+  }
+}
