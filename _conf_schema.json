@@ -1,0 +1,265 @@
+{
+  "enabled": {
+    "description": "启用 BotMesh Memory",
+    "type": "bool",
+    "default": true
+  },
+  "sanitize_native_context": {
+    "description": "清理原生长会话中的冗余内容",
+    "type": "bool",
+    "default": true,
+    "hint": "移除旧 assistant think、重复引用和旧 system reminder，并限制传给模型的原生历史条数；不会删除数据库里的原始会话。"
+  },
+  "max_native_context_items": {
+    "description": "原生会话最多保留消息项",
+    "type": "int",
+    "default": 24,
+    "hint": "通常约等于最近 12 轮用户/助手对话。"
+  },
+  "remove_assistant_thinking": {
+    "description": "从模型输入中移除历史 think",
+    "type": "bool",
+    "default": true
+  },
+  "remove_repeated_quotes": {
+    "description": "移除历史中的重复引用全文",
+    "type": "bool",
+    "default": true
+  },
+  "remove_old_system_reminders": {
+    "description": "移除历史中的旧 system reminder",
+    "type": "bool",
+    "default": true
+  },
+  "recent_raw_history_enabled": {
+    "description": "注入少量去重后的近期原始群聊",
+    "type": "bool",
+    "default": true
+  },
+  "avoid_chathistory_overlap": {
+    "description": "Chathistory 已注入时跳过 Memory 原始群聊块",
+    "type": "bool",
+    "default": true,
+    "hint": "避免同一批群聊被 Chathistory 和 BotMesh Memory 在一轮请求中重复注入；结构化事实、主观记忆和情景摘要仍会保留。"
+  },
+  "recent_raw_history_hours": {
+    "description": "近期原始群聊最大回溯小时",
+    "type": "float",
+    "default": 0.5,
+    "hint": "注入给模型的原始群聊窗口建议保持短（如 0.5 小时），避免长窗口带来重复与噪声；长期记忆交给自动总结。"
+  },
+  "recent_raw_history_messages": {
+    "description": "近期原始群聊最多条数",
+    "type": "int",
+    "default": 20
+  },
+  "raw_history_max_chars": {
+    "description": "近期原始群聊独立预算（字符）",
+    "type": "int",
+    "default": 4000,
+    "hint": "原始群聊单独作为一块注入，不再与结构化记忆争抢 memory_context_max_chars 预算。"
+  },
+  "memory_context_max_chars": {
+    "description": "结构化记忆块最大字符数",
+    "type": "int",
+    "default": 8000
+  },
+  "fact_limit": {
+    "description": "每轮最多共享事实",
+    "type": "int",
+    "default": 12
+  },
+  "private_memory_limit": {
+    "description": "每轮最多当前 memory_key 主观记忆",
+    "type": "int",
+    "default": 8
+  },
+  "episode_limit": {
+    "description": "每轮最多情景摘要",
+    "type": "int",
+    "default": 3
+  },
+  "auto_extract_enabled": {
+    "description": "回复后异步提取事实、纠错和情景摘要",
+    "type": "bool",
+    "default": true,
+    "hint": "异步执行，不阻塞群聊回复。用户明确内容可成为高权威事实；Bot 自己编写的内容只能作为推测或私有承诺。"
+  },
+  "extraction_provider_id": {
+    "description": "记忆提取模型（留空跟随当前会话）",
+    "type": "string",
+    "default": "",
+    "_special": "select_provider"
+  },
+  "extraction_timeout_seconds": {
+    "description": "记忆提取超时（秒）",
+    "type": "int",
+    "default": 60
+  },
+  "extraction_max_tokens": {
+    "description": "记忆提取最大输出 Token",
+    "type": "int",
+    "default": 900
+  },
+  "min_exchange_chars": {
+    "description": "触发自动提取的最少总字符数",
+    "type": "int",
+    "default": 8
+  },
+  "auto_summary_enabled": {
+    "description": "Bot 回复后自动总结近期群聊并写入记忆",
+    "type": "bool",
+    "default": true,
+    "hint": "在 @Bot 且 Bot 回复后，按防抖间隔自动归纳最近一段时间的群聊（含用户间对话）为共享事实与情景摘要，写入后由现有机制注入后续模型上下文。"
+  },
+  "auto_summary_min_interval_seconds": {
+    "description": "自动总结最小间隔（秒）",
+    "type": "int",
+    "default": 300,
+    "hint": "同一群同一记忆身份在该间隔内最多自动总结一次，避免每次回复都重复总结。"
+  },
+  "auto_summary_hours": {
+    "description": "自动总结回溯小时数",
+    "type": "float",
+    "default": 2.0
+  },
+  "auto_summary_messages": {
+    "description": "自动总结最多读取消息条数",
+    "type": "int",
+    "default": 60
+  },
+  "auto_summary_min_chars": {
+    "description": "触发自动总结的最少文字稿字符数",
+    "type": "int",
+    "default": 40,
+    "hint": "文字稿太短（几乎没有可归纳内容）时跳过。"
+  },
+  "auto_summary_max_tokens": {
+    "description": "自动总结最大输出 Token",
+    "type": "int",
+    "default": 900
+  },
+  "auto_summary_timeout_seconds": {
+    "description": "自动总结超时（秒）",
+    "type": "int",
+    "default": 120
+  },
+  "scene_summary_enabled": {
+    "description": "群级滚动场景摘要",
+    "type": "bool",
+    "default": true,
+    "hint": "每轮请求惰性检查，场景过期后后台把最近群聊压成「当前场景」块独立注入，作为远端摘要。"
+  },
+  "scene_summary_window_hours": {
+    "description": "场景摘要回溯小时数",
+    "type": "float",
+    "default": 3.0
+  },
+  "scene_summary_interval_minutes": {
+    "description": "场景摘要最小刷新间隔（分钟）",
+    "type": "int",
+    "default": 10
+  },
+  "scene_summary_min_messages": {
+    "description": "生成场景摘要的最少消息条数",
+    "type": "int",
+    "default": 8
+  },
+  "scene_summary_messages": {
+    "description": "场景摘要最多读取消息条数",
+    "type": "int",
+    "default": 80
+  },
+  "scene_summary_max_chars": {
+    "description": "场景摘要注入最大字符数",
+    "type": "int",
+    "default": 1200
+  },
+  "scene_summary_max_tokens": {
+    "description": "场景摘要最大输出 Token",
+    "type": "int",
+    "default": 500
+  },
+  "scene_summary_timeout_seconds": {
+    "description": "场景摘要超时（秒）",
+    "type": "int",
+    "default": 90
+  },
+  "memory_maintenance_enabled": {
+    "description": "启用记忆归档、过期与重复合并",
+    "type": "bool",
+    "default": true,
+    "hint": "在记忆被使用时惰性检查，每个维护周期最多执行一次。删除原始行前会写入可恢复归档；置顶记忆不会自动过期。"
+  },
+  "maintenance_interval_hours": {
+    "description": "自动维护周期（小时）",
+    "type": "int",
+    "default": 24
+  },
+  "maintenance_max_rows_per_run": {
+    "description": "每次维护最多处理行数",
+    "type": "int",
+    "default": 1000,
+    "hint": "限制单次事务规模；剩余数据会在下个周期继续处理。"
+  },
+  "memory_dedupe_enabled": {
+    "description": "自动合并高度相似的事实和私有记忆",
+    "type": "bool",
+    "default": true,
+    "hint": "只在同一逻辑群内合并；私有记忆还必须属于同一 memory_key、对象与类型。被合并行会先归档。"
+  },
+  "protected_fact_authority": {
+    "description": "永久保护的事实权威度阈值",
+    "type": "int",
+    "default": 80,
+    "hint": "active 且权威度达到该值的事实不会自动过期；80 通常对应用户明确陈述。"
+  },
+  "fact_ttl_days": {
+    "description": "普通事实保留天数",
+    "type": "int",
+    "default": 365,
+    "hint": "0 表示不按时间过期。置顶和达到保护权威度的 active 事实不受影响。"
+  },
+  "superseded_fact_ttl_days": {
+    "description": "已被替代事实保留天数",
+    "type": "int",
+    "default": 90,
+    "hint": "0 表示不按时间过期。"
+  },
+  "private_memory_ttl_days": {
+    "description": "非置顶私有记忆保留天数",
+    "type": "int",
+    "default": 365,
+    "hint": "0 表示不按时间过期；管理员导入并置顶的过去记忆永久保留。"
+  },
+  "episode_ttl_days": {
+    "description": "事件摘要保留天数",
+    "type": "int",
+    "default": 180,
+    "hint": "0 表示不按时间过期。"
+  },
+  "correction_ttl_days": {
+    "description": "纠错流水保留天数",
+    "type": "int",
+    "default": 365,
+    "hint": "纠错产生的高权威 active 事实仍会长期保留；这里控制纠错流水本身。"
+  },
+  "exchange_ttl_days": {
+    "description": "Memory 对话流水保留天数",
+    "type": "int",
+    "default": 30,
+    "hint": "0 表示不按时间过期。结构化事实和事件不随流水一起删除。"
+  },
+  "scene_ttl_days": {
+    "description": "滚动场景历史保留天数",
+    "type": "int",
+    "default": 30,
+    "hint": "每群本来最多保留 16 个场景；0 表示不再按时间过期。"
+  },
+  "archive_ttl_days": {
+    "description": "可恢复归档保留天数",
+    "type": "int",
+    "default": 365,
+    "hint": "归档超过该天数后才会永久删除；0 表示永久保存归档。"
+  }
+}
