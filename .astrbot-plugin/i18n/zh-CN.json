@@ -1,0 +1,9 @@
+{
+  "pages": {
+    "memory-manager": {
+      "title": "BotMesh 记忆管理",
+      "description": "查看和编辑固定身份、共享事实、私有记忆、情景摘要与纠错"
+    }
+  }
+}
+
