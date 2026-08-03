@@ -1,0 +1,10 @@
+name: astrbot_plugin_botmesh_memory
+display_name: BotMesh Memory
+author: Sirin
+version: 0.6.2
+desc: 动态读取 BotMesh 分群身份，以稳定 memory_key 让主观记忆随角色跨账号移动，并提供共享事实、情景摘要、纠错和短上下文检索。
+repo: "https://github.com/chah-p7/astrbot_plugin_botmesh_memory"
+astrbot_version: ">=4.24.2,<5"
+support_platforms:
+  - aiocqhttp
+  - qq_official
