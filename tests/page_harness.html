@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BotMesh Memory 页面测试</title>
+    <link rel="stylesheet" href="../pages/memory-manager/style.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="hero">
+        <div><p class="eyebrow">BOTMESH · MEMORY</p><h1>群聊记忆</h1><p class="subtitle">页面测试</p></div>
+        <button id="reload" class="button button-quiet" type="button">刷新</button>
+      </header>
+      <p id="status" class="status" role="status" aria-live="polite"></p>
+      <section class="scope-card">
+        <div class="section-head">
+          <div><p class="section-kicker">当前范围</p><h2>选择群聊</h2><p>按逻辑群读取。</p></div>
+          <label class="scope-select"><span>群名称</span><select id="scope"></select></label>
+        </div>
+        <div class="summary-card">
+          <div><strong>AI 总结当前聊天记录</strong><p>测试逻辑群参数。</p></div>
+          <label><span>总结模型</span><select id="summaryProvider"></select></label>
+          <label><span>记录范围</span><select id="summaryHours"><option value="24" selected>最近 24 小时</option></select></label>
+          <button id="summarize" class="button button-primary" type="button">立即总结</button>
+        </div>
+        <div class="add-row"><input id="newFact" placeholder="手动固定一条客观事实" /><button id="addFact" class="button button-secondary" type="button">固定事实</button></div>
+        <div class="import-card">
+          <div class="import-copy"><strong>迁移 / 补写过去记忆</strong><p>测试导入。</p></div>
+          <label><span>记忆类型</span><select id="importKind"><option value="private">Bot 私有过去记忆</option></select></label>
+          <label><span>记忆所属 Bot</span><select id="importBot"></select></label>
+          <textarea id="importText"></textarea>
+          <div class="import-actions"><button id="importMemory" type="button">导入记忆</button><button id="migrateLegacy" type="button">整理现有旧记忆</button></div>
+        </div>
+      </section>
+      <nav class="tabs" aria-label="记忆类型">
+        <button class="tab active" data-tab="facts" type="button">共享事实</button>
+        <button class="tab" data-tab="private" type="button">角色记忆</button>
+        <button class="tab" data-tab="episodes" type="button">情景摘要</button>
+        <button class="tab" data-tab="schedules" type="button">日程</button>
+        <button class="tab" data-tab="corrections" type="button">纠错</button>
+      </nav>
+      <section class="panel" id="factsPanel"><div id="facts" class="list"></div></section>
+      <section class="panel" id="privatePanel" hidden><div id="private" class="list"></div></section>
+      <section class="panel" id="episodesPanel" hidden><div id="episodes" class="list"></div></section>
+      <section class="panel" id="schedulesPanel" hidden><div id="schedules" class="list"></div></section>
+      <section class="panel" id="correctionsPanel" hidden><div id="corrections" class="list"></div></section>
+    </main>
+    <script>
+      const groupId = "测试逻辑群";
+      const rawScope = "default_bot:GroupMessage:RAW_GROUP";
+      const workspace = {
+        facts: [],
+        private_memories: [],
+        episodes: [{ id: 7, scope_id: rawScope, title: "旧平台会话摘要", summary: "这条旧记录已经归入逻辑群。" }],
+        schedules: [{ id: 8, scope_id: "botmesh:main_group", bot_id: "bot_a", memory_key: "小A角色", business_date: "2026-08-03", schedule_text: "📅 今日日程（2026-08-03）\n上午：整理书架", created_at: 1785711600 }],
+        corrections: [],
+        scopes: [],
+        labels: {
+          bots: { bot_a: "小A" },
+          groups: { [groupId]: "测试群名称" },
+          scopes: { [`botmesh:${groupId}`]: "测试群名称", [rawScope]: "测试群名称" },
+          scope_groups: { [`botmesh:${groupId}`]: groupId, [rawScope]: groupId },
+        },
+        logical_groups: [{ logical_group_id: groupId, scope_id: `botmesh:${groupId}`, display_name: "测试群名称" }],
+        logical_bots: [{ bot_id: "bot_a", display_name: "小A" }],
+        providers: [{ id: "provider-a", name: "测试模型" }],
+        configured_provider_id: "provider-a",
+      };
+      window.AstrBotPluginPage = {
+        ready: async () => {},
+        apiGet: async () => structuredClone(workspace),
+        apiPost: async (path, payload) => {
+          if (path === "workspace/summarize") {
+            if (payload.logical_group_id !== groupId || payload.scope_id !== `botmesh:${groupId}`) {
+              throw new Error("总结接口没有收到明确的逻辑群");
+            }
+            return { ...structuredClone(workspace), summarized: true, group_name: "测试群名称", source_message_count: 12 };
+          }
+          return structuredClone(workspace);
+        },
+      };
+    </script>
+    <script src="../pages/memory-manager/app.js"></script>
+  </body>
+</html>
